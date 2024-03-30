@@ -1,0 +1,105 @@
+#!/bin/sh
+pkgname="libcap"
+pkgver="2.69"
+pkgdesc="Capability library"
+
+subpackageList="libcap libcap-devel libcap-doc-mandoc capability capability-doc-mandoc"
+
+pkgdeps="musl"
+pkgbuildDeps="gcc make musl-devel"
+
+pull() {
+	curl "https://mirrors.edge.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-$pkgver.tar.gz" \
+		--output "$temporaryDataLocation/$pkgname-$pkgver.tar.gz";
+
+	gzip -d \
+		< "$temporaryDataLocation/$pkgname-$pkgver.tar.gz" \
+		> "$temporaryDataLocation/$pkgname-$pkgver.tar"
+
+	tar xvf "$temporaryDataLocation/$pkgname-$pkgver.tar";
+
+	cd "$pkgname-$pkgver"
+	cp -r * "$buildDirectoryLocation"
+
+	cd "$startingLocation";
+}
+
+build() {
+	cd "$buildDirectoryLocation";
+
+	make $MAKEOPTS \
+		prefix=/usr \
+		GOLANG=no \
+		lib=lib
+
+	make $MAKEOPTS \
+		prefix=/usr \
+		GOLANG=no \
+		lib=lib \
+		DESTDIR="$outputDataLocation/bundle" \
+		install
+
+	cd "$startingLocation";
+}
+
+packager_libcap() {
+	pkgname="libcap";
+	pkgdesc="Capability library";
+	pkgdeps="musl";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr";
+
+	cp -r "$outputDataLocation/bundle/usr/lib" "$outputDataLocation/$pkgname/usr/";
+}
+
+packager_libcap_devel() {
+	pkgname="libcap-devel";
+	pkgdesc="Capability library (development headers)";
+	pkgdeps="none";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr/include";
+
+	cp -r "$outputDataLocation/bundle/usr/include" "$outputDataLocation/$pkgname/usr/";
+}
+
+packager_libcap_doc_mandoc() {
+	pkgname="libcap-doc-mandoc";
+	pkgdesc="Capability library (documentation)";
+	pkgdeps="none";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr/share/man";
+
+	cp -r "$outputDataLocation/bundle/usr/share/man/man8" "$outputDataLocation/$pkgname/usr/share/man/";
+}
+
+packager_capability() {
+	pkgname="capability";
+	pkgdesc="The official wrapper around the capability library";
+	pkgdeps="musl libcap";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr";
+
+	cp -r "$outputDataLocation/bundle/usr/sbin" "$outputDataLocation/$pkgname/usr";
+}
+
+packager_capability_doc_mandoc() {
+	pkgname="capability-doc-mandoc";
+	pkgdesc="The official wrapper around the capability library (documentation)"
+	pkgdeps="none";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr/share/man";
+
+	cp -r "$outputDataLocation/bundle/usr/share/man/man1" "$outputDataLocation/$pkgname/usr/share/man/";
+	cp -r "$outputDataLocation/bundle/usr/share/man/man3" "$outputDataLocation/$pkgname/usr/share/man/";
+}
+
