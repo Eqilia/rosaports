@@ -1,0 +1,64 @@
+#!/bin/sh
+pkgname="musl"
+pkgver="1.2.5"
+pkgdesc="Musl C library"
+
+subpackageList="musl musl-devel"
+
+pkgdeps="none"
+pkgbuildDeps="gcc make"
+
+pull() {
+	curl "https://musl.libc.org/releases/musl-$pkgver.tar.gz" \
+		--output "$temporaryDataLocation/musl-$pkgver.tar.gz";
+
+	gzip -d \
+		< "$temporaryDataLocation/musl-$pkgver.tar.gz" \
+		> "$temporaryDataLocation/musl-$pkgver.tar"
+
+	tar xvf "$temporaryDataLocation/musl-$pkgver.tar";
+
+	cd "musl-$pkgver"
+	cp -r * "$buildDirectoryLocation"
+
+	cd "$startingLocation";
+}
+
+configure() {
+	cd "$buildDirectoryLocation";
+
+	./configure \
+		--prefix=/usr \
+		--bindir=/bin \
+		--libdir=/lib64 \
+		--includedir=/usr/include \
+		--syslibdir=/lib
+
+	cd "$startingLocation";
+}
+
+build() {
+	cd "$buildDirectoryLocation";
+
+	make $MAKEOPTS
+
+	make $MAKEOPTS install \
+		DESTDIR="$outputDataLocation/bundle"
+
+	cd "$startingLocation";
+}
+
+packager_musl() {
+	mkdir -p "$outputDataLocation/musl";
+
+	cp -r "$outputDataLocation/bundle/lib64" "$outputDataLocation/musl/";
+	cp -r "$outputDataLocation/bundle/lib" "$outputDataLocation/musl/";
+}
+
+packager_musl_devel() {
+	mkdir -p "$outputDataLocation/musl-devel";
+
+	mkdir -p "$outputDataLocation/musl-devel/usr/include";
+
+	cp -r "$outputDataLocation/bundle/usr/include" "$outputDataLocation/musl-devel/usr/";
+}
