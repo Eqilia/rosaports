@@ -1,7 +1,10 @@
 #!/bin/sh
 pkgname="musl"
 pkgver="1.2.5"
+pkgrel="0"
 pkgdesc="Musl C library"
+
+url="https://musl.libc.org"
 
 subpackageList="musl musl-devel"
 
