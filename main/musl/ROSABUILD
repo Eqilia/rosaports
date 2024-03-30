@@ -49,6 +49,9 @@ build() {
 }
 
 packager_musl() {
+	pkgname="musl";
+	pkgdesc="Musl C library";
+
 	mkdir -p "$outputDataLocation/musl";
 
 	cp -r "$outputDataLocation/bundle/lib64" "$outputDataLocation/musl/";
@@ -56,6 +59,9 @@ packager_musl() {
 }
 
 packager_musl_devel() {
+	pkgname="musl-devel";
+	pkgdesc="Musl C library (development headers)";
+
 	mkdir -p "$outputDataLocation/musl-devel";
 
 	mkdir -p "$outputDataLocation/musl-devel/usr/include";
