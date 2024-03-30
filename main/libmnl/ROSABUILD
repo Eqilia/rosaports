@@ -1,0 +1,91 @@
+#!/bin/sh
+pkgname="libmnl"
+pkgver="1.0.5"
+pkgrel="0"
+pkgdesc="Minimal Netlink Library"
+
+url="https://git.netfilter.org/libmnl/"
+
+subpackageList="libmnl libmnl-devel"
+
+pkgdeps="musl"
+# autotools: libmnl is [REDACTED]
+# and requires an autoreconf...
+# Autoconf FOR [REDACTED]'S SAKE
+# MAY YOU NOT BREAK FOR A [REDACTED]
+# MINUTE!?
+pkgbuildDeps="gcc make musl-devel linux-headers autotools"
+
+pull() {
+	curl "https://www.netfilter.org/pub/$pkgname/$pkgname-$pkgver.tar.bz2" \
+		--output "$temporaryDataLocation/$pkgname-$pkgver.tar.bz2";
+
+	bzip2 -d \
+		< "$temporaryDataLocation/$pkgname-$pkgver.tar.bz2" \
+		> "$temporaryDataLocation/$pkgname-$pkgver.tar"
+
+	tar xvf "$temporaryDataLocation/$pkgname-$pkgver.tar";
+
+	cd "$pkgname-$pkgver"
+	cp -r * "$buildDirectoryLocation"
+
+	cd "$startingLocation";
+}
+
+patch() {
+	cd "$buildDirectoryLocation";
+
+	set +e;
+	autoreconf -i;
+	autoreconf -vi;
+	set -e;
+
+	cd "$startingLocation";
+}
+
+configure() {
+	cd "$buildDirectoryLocation";
+
+	./configure \
+		--enable-static \
+		--prefix=/usr \
+		--localstatedir=/var \
+		--mandir=/usr/share/man
+
+	cd "$startingLocation";
+}
+
+build() {
+	cd "$buildDirectoryLocation";
+
+	make $MAKEOPTS
+
+	make $MAKEOPTS install \
+		DESTDIR="$outputDataLocation/bundle"
+
+	cd "$startingLocation";
+}
+
+packager_libmnl() {
+	pkgname="libmnl";
+	pkgdesc="Minimal Netlink Library";
+	pkgdeps="musl";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr/lib"
+
+	cp -r "$outputDataLocation/bundle/usr/lib" "$outputDataLocation/$pkgname/usr/";
+}
+
+packager_libmnl_devel() {
+	pkgname="libmnl-devel";
+	pkgdesc="Minimal Netlink Library (development headers)";
+	pkgdeps="none";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr/include";
+
+	cp -r "$outputDataLocation/bundle/usr/include" "$outputDataLocation/$pkgname/usr/";
+}
