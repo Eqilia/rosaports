@@ -1,0 +1,81 @@
+#!/bin/sh
+pkgname="m4"
+pkgver="1.4.19"
+pkgrel="0"
+pkgdesc="GNU M4 macro processor"
+
+maintainers="Eqilia <eqilia@airime.dev>"
+url="https://www.gnu.org/software/m4/"
+
+subpackageList="m4 m4-doc-mandoc"
+
+pkgdeps="none"
+# m4 seems to be [REDACTED] too
+# Well, another day, another autotools
+# breakage :D
+# Straight up [REDACTED]ing fun for downstream!
+# And also, [REDACTED]ING DEPENDENCY HELL!!!
+# WHICH [REDACTED]ING PROGRAM REQUIRES THAT MUCH
+# PROGRAMS TO COMPILE!? (outside of gcc, that's
+# ANOTHER story)
+pkgbuildDeps="gcc make musl-devel automake gperf help2man texinfo"
+
+pull() {
+	curl "https://ftp.gnu.org/gnu/$pkgname/$pkgname-$pkgver.tar.gz" \
+		--output "$temporaryDataLocation/$pkgname-$pkgver.tar.gz";
+
+	gzip -d \
+		< "$temporaryDataLocation/$pkgname-$pkgver.tar.gz" \
+		> "$temporaryDataLocation/$pkgname-$pkgver.tar"
+
+	tar xvf "$temporaryDataLocation/$pkgname-$pkgver.tar";
+
+	cd "$pkgname-$pkgver"
+	cp -r * "$buildDirectoryLocation"
+
+	cd "$startingLocation";
+}
+
+configure() {
+	cd "$buildDirectoryLocation";
+
+	./configure \
+		--prefix=/usr 
+
+	cd "$startingLocation";
+}
+
+build() {
+	cd "$buildDirectoryLocation";
+
+	make $MAKEOPTS \
+		CFLAGS="-Wno-error"
+
+	make $MAKEOPTS install \
+		DESTDIR="$outputDataLocation/bundle"
+
+	cd "$startingLocation";
+}
+
+packager_m4() {
+	pkgname="m4";
+	pkgdesc="GNU M4 macro processor";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr";
+
+	cp -r "$outputDataLocation/bundle/usr/bin" "$outputDataLocation/$pkgname/usr/";
+}
+
+packager_m4_doc_mandoc() {
+	pkgname="m4-doc-mandoc";
+	pkgdesc="GNU M4 macro processor (Mandoc documentation)";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr/share/man";
+
+	cp -r "$outputDataLocation/bundle/usr/share/man/man1" "$outputDataLocation/$pkgname/usr/share/man/";
+}
+
