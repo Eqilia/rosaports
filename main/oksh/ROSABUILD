@@ -1,0 +1,79 @@
+#!/bin/sh
+pkgname="oksh"
+pkgver="7.4"
+pkgrel="0"
+pkgdesc="Portable OpenBSD ksh"
+
+maintainers="Eqilia <eqilia@airime.dev>"
+url="https://github.com/ibara/oksh/archive/refs/tags/oksh-$pkgver.tar.gz"
+
+subpackageList="oksh oksh-doc-mandoc"
+
+pkgdeps="musl libncurses";
+pkgbuildDeps="gcc make musl-devel libncurses-devel"
+
+pull() {
+	# NOTE: -L -> follow redirects
+	curl \
+		-L \
+		"https://github.com/ibara/oksh/releases/download/$pkgname-$pkgver/$pkgname-$pkgver.tar.gz" \
+		--output "$temporaryDataLocation/$pkgname-$pkgver.tar.gz";
+
+	gzip -d \
+		< "$temporaryDataLocation/$pkgname-$pkgver.tar.gz" \
+		> "$temporaryDataLocation/$pkgname-$pkgver.tar"
+
+	tar xvf "$temporaryDataLocation/$pkgname-$pkgver.tar";
+
+	cd "$pkgname-$pkgver"
+	cp -r * "$buildDirectoryLocation"
+
+	cd "$startingLocation";
+}
+
+configure() {
+	cd "$buildDirectoryLocation";
+
+	./configure \
+		--prefix=/usr \
+		--bindir=/bin \
+		--mandir=/usr/share/man \
+		--enable-curses \
+		--no-strip
+
+	cd "$startingLocation";
+}
+
+build() {
+	cd "$buildDirectoryLocation";
+
+	make $MAKEOPTS
+
+	make $MAKEOPTS install \
+		DESTDIR="$outputDataLocation/bundle"
+
+	cd "$startingLocation";
+}
+
+packager_oksh() {
+	pkgname="oksh";
+	pkgdesc="Portable OpenBSD ksh";
+	pkgdeps="musl ncurses";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	cp -r "$outputDataLocation/bundle/bin" "$outputDataLocation/$pkgname/";
+}
+
+packager_oksh_doc_mandoc() {
+	pkgname="oksh-doc-mandoc";
+	pkgdesc="Portable OpenBSD ksh (mandoc documentation)";
+	pkgdeps="none";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr/share/man";
+
+	cp -r "$outputDataLocation/bundle/usr/share/man/man1" "$outputDataLocation/$pkgname/usr/share/man/";
+}
+
