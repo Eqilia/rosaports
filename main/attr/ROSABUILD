@@ -10,7 +10,7 @@ url="https://savannah.nongnu.org/projects/attr"
 subpackageList="attr attr-doc-mandoc libattr libattr-devel"
 
 pkgdeps="musl";
-pkgbuildDeps="gcc make musl-devel automake gperf help2man texinfo"
+pkgbuildDeps="gcc make musl-devel"
 
 pull() {
 	curl -L \
