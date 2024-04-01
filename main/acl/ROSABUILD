@@ -1,0 +1,114 @@
+#!/bin/sh
+pkgname="acl"
+pkgver="2.3.2"
+pkgrel="0"
+pkgdesc="Access control list library and wrapper"
+
+maintainers="Eqilia <eqilia@airime.dev>"
+url="https://savannah.nongnu.org/projects/acl"
+
+subpackageList="acl acl-doc-mandoc libacl libacl-devel"
+
+pkgdeps="musl libattr";
+# Light-medium autoconf treatment
+pkgbuildDeps="gcc make musl-devel libattr-devel automake"
+
+pull() {
+	curl -L \
+		"https://download.savannah.nongnu.org/releases/$pkgname/$pkgname-$pkgver.tar.gz" \
+		--output "$temporaryDataLocation/$pkgname-$pkgver.tar.gz";
+
+	gzip -d \
+		< "$temporaryDataLocation/$pkgname-$pkgver.tar.gz" \
+		> "$temporaryDataLocation/$pkgname-$pkgver.tar"
+
+	tar xvf "$temporaryDataLocation/$pkgname-$pkgver.tar";
+
+	cd "$pkgname-$pkgver"
+	cp -r * "$buildDirectoryLocation"
+
+	cd "$startingLocation";
+}
+
+configure() {
+	cd "$buildDirectoryLocation";
+
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--libdir=/lib \
+		--bindir=/bin \
+		--mandir=/usr/share/man \
+		--docdir=/usr/share/doc/attr
+
+	cd "$startingLocation";
+}
+
+build() {
+	cd "$buildDirectoryLocation";
+
+	make $MAKEOPTS \
+		CFLAGS="-Wno-error"
+
+	make $MAKEOPTS install \
+		DESTDIR="$outputDataLocation/bundle"
+
+	cd "$startingLocation";
+}
+
+packager_acl() {
+	pkgname="acl";
+	pkgdesc="A wrapper around the access control list library";
+	pkgdeps="musl libacl";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	cp -r "$outputDataLocation/bundle/bin" "$outputDataLocation/$pkgname/";
+}
+
+packager_acl_doc_mandoc() {
+	pkgname="acl-doc-mandoc";
+	pkgdesc="A wrapper around the access control list library (Mandoc documentation)";
+	pkgdeps="none";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr/share/man";
+
+	cp -r "$outputDataLocation/bundle/usr/share/man/man1" "$outputDataLocation/$pkgname/usr/share/man/";
+}
+
+packager_libacl() {
+	pkgname="libacl";
+	pkgdesc="Access control list library";
+	pkgdeps="musl libattr";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	cp -r "$outputDataLocation/bundle/usr" "$outputDataLocation/$pkgname/";
+}
+
+packager_libacl_doc_mandoc() {
+	pkgname="libacl-doc-mandoc";
+	pkgdesc="Access control list library (mandoc documentation)";
+	pkgdeps="none";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr/share/man";
+
+	cp -r "$outputDataLocation/bundle/usr/share/man/man3" "$outputDataLocation/$pkgname/usr/share/man/";
+}
+
+packager_libacl_devel() {
+	pkgname="libacl-devel";
+	pkgdesc="Access control list library (development files)";
+	pkgdeps="none";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr";
+
+	cp -r "$outputDataLocation/bundle/usr/include" "$outputDataLocation/$pkgname/usr/";
+}
+
