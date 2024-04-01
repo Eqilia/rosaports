@@ -1,0 +1,113 @@
+#!/bin/sh
+pkgname="attr"
+pkgver="2.5.2"
+pkgrel="0"
+pkgdesc="A program for managing xattrs on filesystems"
+
+maintainers="Eqilia <eqilia@airime.dev>"
+url="https://savannah.nongnu.org/projects/attr"
+
+subpackageList="attr attr-doc-mandoc libattr libattr-devel"
+
+pkgdeps="musl";
+pkgbuildDeps="gcc make musl-devel automake gperf help2man texinfo"
+
+pull() {
+	curl -L \
+		"https://download.savannah.nongnu.org/releases/$pkgname/$pkgname-$pkgver.tar.gz" \
+		--output "$temporaryDataLocation/$pkgname-$pkgver.tar.gz";
+
+	gzip -d \
+		< "$temporaryDataLocation/$pkgname-$pkgver.tar.gz" \
+		> "$temporaryDataLocation/$pkgname-$pkgver.tar"
+
+	tar xvf "$temporaryDataLocation/$pkgname-$pkgver.tar";
+
+	cd "$pkgname-$pkgver"
+	cp -r * "$buildDirectoryLocation"
+
+	cd "$startingLocation";
+}
+
+configure() {
+	cd "$buildDirectoryLocation";
+
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--libdir=/lib \
+		--bindir=/bin \
+		--mandir=/usr/share/man \
+		--docdir=/usr/share/doc/attr
+
+	cd "$startingLocation";
+}
+
+build() {
+	cd "$buildDirectoryLocation";
+
+	make $MAKEOPTS \
+		CFLAGS="-Wno-error"
+
+	make $MAKEOPTS install \
+		DESTDIR="$outputDataLocation/bundle"
+
+	cd "$startingLocation";
+}
+
+packager_attr() {
+	pkgname="attr";
+	pkgdesc="A wrapper around the library for managing xattrs on file systems";
+	pkgdeps="musl libattr";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	cp -r "$outputDataLocation/bundle/bin" "$outputDataLocation/$pkgname/";
+}
+
+packager_attr_doc_mandoc() {
+	pkgname="attr-doc-mandoc";
+	pkgdesc="A wrapper around the library for managing xattrs on file systems (Mandoc documentation)";
+	pkgdeps="none";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr/share/man";
+
+	cp -r "$outputDataLocation/bundle/usr/share/man/man1" "$outputDataLocation/$pkgname/usr/share/man/";
+}
+
+packager_libattr() {
+	pkgname="libattr";
+	pkgdesc="The library for managing xattrs on file systems";
+	pkgdeps="musl";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	cp -r "$outputDataLocation/bundle/usr" "$outputDataLocation/$pkgname/";
+}
+
+packager_libattr_doc_mandoc() {
+	pkgname="libattr-doc-mandoc";
+	pkgdesc="The library for managing xattrs on file systems (mandoc documentation)";
+	pkgdeps="none";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr/share/man";
+
+	cp -r "$outputDataLocation/bundle/usr/share/man/man3" "$outputDataLocation/$pkgname/usr/share/man/";
+}
+
+packager_libattr_devel() {
+	pkgname="libattr-devel";
+	pkgdesc="The library for managing xattrs on file systems (development files)";
+	pkgdeps="none";
+
+	mkdir -p "$outputDataLocation/$pkgname";
+
+	mkdir -p "$outputDataLocation/$pkgname/usr";
+
+	cp -r "$outputDataLocation/bundle/usr/include" "$outputDataLocation/$pkgname/usr/";
+}
+
