@@ -1,6 +1,6 @@
 #!/bin/sh
 pkgname="oksh"
-pkgver="7.4"
+pkgver="7.5"
 pkgrel="0"
 pkgdesc="Portable OpenBSD ksh"
 
