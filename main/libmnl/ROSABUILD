@@ -4,6 +4,7 @@ pkgver="1.0.5"
 pkgrel="0"
 pkgdesc="Minimal Netlink Library"
 
+maintainer="Eqilia <eqilia@azelia.eu>"
 url="https://git.netfilter.org/libmnl/"
 
 subpackageList="libmnl libmnl-devel"

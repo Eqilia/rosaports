@@ -4,7 +4,7 @@ pkgver="2.3.2"
 pkgrel="0"
 pkgdesc="Access control list library and wrapper"
 
-maintainers="Eqilia <eqilia@airime.dev>"
+maintainers="Eqilia <eqilia@azelia.eu>"
 url="https://savannah.nongnu.org/projects/acl"
 
 subpackageList="acl acl-doc-mandoc libacl libacl-devel"

@@ -4,7 +4,7 @@ pkgver="7.5"
 pkgrel="0"
 pkgdesc="Portable OpenBSD ksh"
 
-maintainers="Eqilia <eqilia@airime.dev>"
+maintainers="Eqilia <eqilia@azelia.eu>"
 url="https://github.com/ibara/oksh/releases"
 
 subpackageList="oksh oksh-doc-mandoc"

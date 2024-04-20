@@ -4,7 +4,7 @@ pkgver="1.4.19"
 pkgrel="0"
 pkgdesc="GNU M4 macro processor"
 
-maintainers="Eqilia <eqilia@airime.dev>"
+maintainers="Eqilia <eqilia@azelia.eu>"
 url="https://www.gnu.org/software/m4/"
 
 subpackageList="m4 m4-doc-mandoc"

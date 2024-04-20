@@ -4,6 +4,7 @@ pkgver="1.2.5"
 pkgrel="0"
 pkgdesc="Musl C library"
 
+maintainer="Eqilia <eqilia@azelia.eu>"
 url="https://musl.libc.org"
 
 subpackageList="musl musl-devel"

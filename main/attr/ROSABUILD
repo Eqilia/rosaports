@@ -4,7 +4,7 @@ pkgver="2.5.2"
 pkgrel="0"
 pkgdesc="A program for managing xattrs on filesystems"
 
-maintainers="Eqilia <eqilia@airime.dev>"
+maintainers="Eqilia <eqilia@azelia.eu>"
 url="https://savannah.nongnu.org/projects/attr"
 
 subpackageList="attr attr-doc-mandoc libattr libattr-devel"

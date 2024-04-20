@@ -4,6 +4,7 @@ pkgver="2.69"
 pkgrel="0"
 pkgdesc="Capability library"
 
+maintainers="Eqilia <eqilia@azelia.eu>"
 url="https://mirrors.edge.kernel.org/pub/linux/libs/security/linux-privs/libcap2/"
 
 subpackageList="libcap libcap-devel libcap-doc-mandoc capability capability-doc-mandoc"
